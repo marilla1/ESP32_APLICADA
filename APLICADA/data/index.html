@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Hola mundo</h1>
+
+    <button class="ON">ON</button>
+    <button class="OFF">OFF</button>
+
+
+    <script>
+
+        const boton1 = document.querySelector('.ON')
+        const boton2 = document.querySelector('.OFF')
+
+        let socketConnection = new WebSocket('ws://' + location.hostname + ':81/');
+
+        boton1.addEventListener('click', ()=>{
+
+            socketConnection.send('LedOn');
+            
+            console.log('ON')
+        
+
+        })
+
+        boton2.addEventListener('click', ()=>{
+            
+            
+            socketConnection.send('LedOff');
+
+            console.log('OFF')
+
+
+
+        })
+
+    </script>
+</body>
+</html>

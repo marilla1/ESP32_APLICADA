@@ -11,6 +11,11 @@
     <button class="ON" onclick="turnOn()">ON</button>
     <button class="OFF" onclick="turnOff()">OFF</button>
 
+    <div>
+        <h2>Distance</h2>
+        <h2 class="dist_value"></h2>
+    </div>
+
 
     <script>
 
@@ -26,22 +31,49 @@
         boton1.addEventListener('click', ()=>{
 
             // socketConnection.send('LedOn');
-            
             console.log('ON')
-        
 
         })
 
         boton2.addEventListener('click', ()=>{
-            
-            
-            // socketConnection.send('LedOff');
-
+            // socketConnection.send('LedOff')
             console.log('OFF')
 
-
-
         })
+
+        socketConnection.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+        
+                if (data.distance !== undefined) {
+                    let value = data.distance;
+                    UpdateDist(value);
+        
+                    if (value > 10) {
+                        socketConnection.send("LedOn");
+                        console.log("Enviando a llenar");
+                    } else {
+                        socketConnection.send("LedOff");
+                        console.log("Detener llenado");
+                    }
+                } else if (data.status) {
+                    console.log("Estado del servidor:", data.status);
+                }
+            } catch (error) {
+                console.error("Error al parsear el mensaje:", error, "Mensaje recibido:", event.data);
+            }
+        };
+        
+
+
+        function UpdateDist(value){
+
+            const space = document.querySelector(".dist_value");
+
+            space.innerHTML = `${value}<span>cm</span>`;
+
+
+        }
 
     </script>
 </body>

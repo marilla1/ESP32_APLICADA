@@ -3,21 +3,47 @@
 #include <WebSocketsServer.h>
 #include <ESPAsyncWebServer.h>
 #include "FS.h"
+#include <LiquidCrystal_I2C.h> //lcd
 
-const int ledPin = 13;
 
+
+const int ledPin = 2;
+const int trigPin = 13;
+const int echoPin = 12;
+const double soundSpeed = 0.034;
+const int dataTxTimeInterval = 500; //ms
+long dist;
+
+//Inicio de servidor asincrono, WebSocket y LiquidCrystal
 AsyncWebServer server(80);
 WebSocketsServer WebSockets(81);
+LiquidCrystal_I2C lcd(0x27,16,2);
 
+//PROTOTIPADO
 void notFound(AsyncWebServerRequest *request);
 void WebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
 void listSPIFFSFiles(); // Función para listar archivos en SPIFFS
+long getDistance();
+void pantalla(long distancia, String msj);
 
+
+
+//Inicio del setUp
 void setup() {
   Serial.begin(115200);
   Serial.println("============================Inicio============================\n");
   
+
+  //CONFIGURACIONES DE PINES (LED, SENSOR ULTRASONICO Y PANTALLA)
   pinMode(ledPin, OUTPUT);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  //CONFIGURACION DE LA PANTALLA
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0,0);
+
 
   WiFi.softAP("ProbandoAP", "");
   Serial.println("\nsoftAP");
@@ -74,6 +100,23 @@ void setup() {
 
 void loop(void) {
   WebSockets.loop();
+  
+  static uint32_t prevMillis = 0;
+
+  dist = getDistance();
+
+  if(millis() - prevMillis >= dataTxTimeInterval){
+    
+    prevMillis = millis();
+
+    String data = "{\"distance\": " + String(dist) + "}";
+
+    WebSockets.broadcastTXT(data);
+
+    Serial.println(data);
+
+  }
+
 }
 
 void notFound(AsyncWebServerRequest *request) {
@@ -102,13 +145,41 @@ void WebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
       if (msg.equalsIgnoreCase("ledon")) {
         digitalWrite(ledPin, HIGH);
         Serial.printf(" Mensaje recibido: %s\n", msg);
+        pantalla(dist, "LLenando tanque");
       }
 
       if (msg.equalsIgnoreCase("ledoff")) {
         digitalWrite(ledPin, LOW);
         Serial.printf(" Mensaje recibido: %s\n", msg);
+        pantalla(dist, "Llenado Detenido");
+
       }
   }
+}
+
+//Funcion para obtener la lectura del ultrasonico
+
+long getDistance(){
+
+  long duration, distance;
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+
+  distance = duration * soundSpeed/2;
+
+  distance = distance > 350 ? 200 : distance;
+
+
+
+  return distance;
 }
 
 // Función para listar los archivos en SPIFFS
@@ -124,3 +195,36 @@ void listSPIFFSFiles() {
         file = root.openNextFile();
     }
 }
+
+
+void pantalla(long distancia, String msj){
+  if (distancia > 5) {
+
+    // digitalWrite(ledPin, LOW);  // Enciende el LED 1 cuando la distancia es mayor a 150 cm
+    lcd.print(distancia);
+    lcd.print(" cm");
+    lcd.setCursor(0,1); // column#4 and Row #1 
+    lcd.print(msj);
+    delay(500);
+    lcd.clear();
+
+
+
+  } 
+  else {
+
+    //digitalWrite(ledPin, HIGH);   // Apaga el LED 1
+    
+    lcd.print(distancia);
+    lcd.print(" cm");
+    lcd.setCursor(1,1); // column#4 and Row #1 
+    lcd.print("Detener Llenado");
+    
+    delay(500);
+    lcd.clear();
+
+
+
+  }
+}
+

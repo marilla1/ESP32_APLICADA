@@ -1,80 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
-    <h1>Hola mundo</h1>
+  </head>
+  <body>
+    <style>
+      #svg circle {
+        stroke-dashoffset: 0;
+        transition: stroke-dashoffset 1s linear;
+        stroke: #666;
+        stroke-width: 1em;
+      }
+      #svg #bar {
+        stroke: #ff9f1e;
+      }
+      #cont {
+        display: block;
+        height: 200px;
+        width: 200px;
+        margin: 2em auto;
+        box-shadow: 0 0 1em black;
+        border-radius: 100%;
+        position: relative;
+      }
+      #cont:after {
+        position: absolute;
+        display: block;
+        height: 160px;
+        width: 160px;
+        left: 50%;
+        top: 50%;
+        box-shadow: inset 0 0 1em black;
+        content: attr(data-pct) "%";
+        margin-top: -80px;
+        margin-left: -80px;
+        border-radius: 100%;
+        line-height: 160px;
+        font-size: 2em;
+        text-shadow: 0 0 0.5em black;
+      }
 
-    <button class="ON" onclick="turnOn()">ON</button>
-    <button class="OFF" onclick="turnOff()">OFF</button>
+      input {
+        color: #000;
+      }
+
+      /* Make things perty */
+      html {
+        height: 100%;
+      }
+      body {
+        font-family: "Source Sans Pro", Helvetica, Arial, sans-serif;
+        background-color: #0d0d0d;
+        color: #fff;
+        height: 100%;
+        padding-top: 2em;
+        text-align: center;
+      }
+      h1,
+      h2 {
+        margin: 0;
+        text-transform: uppercase;
+        text-shadow: 0 0 0.5em black;
+      }
+      h2 {
+        font-weight: 300;
+      }
+      input {
+        border: 1px solid #666;
+        background: #333;
+        color: #fff;
+        padding: 0.5em;
+        box-shadow: none;
+        outline: none !important;
+        margin: 1em auto;
+        text-align: center;
+      }
+    </style>
 
     <div>
-        <h2>Distance</h2>
-        <h2 class="dist_value"></h2>
+        <button class="ON" onclick="turnOn()">ON</button>
+    
+        <button class="OFF" onclick="turnOff()">OFF</button>
+    </div>
+
+    <br /><br /><br />
+
+    <h1>Porcentaje del Tanque</h1>
+
+    <div id="cont" data-pct="100">
+      <svg
+        id="svg"
+        width="200"
+        height="200"
+        viewPort="0 0 100 100"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          r="90"
+          cx="100"
+          cy="100"
+          fill="transparent"
+          stroke-dasharray="565.48"
+          stroke-dashoffset="0"
+        ></circle>
+        <circle
+          id="bar"
+          r="90"
+          cx="100"
+          cy="100"
+          fill="transparent"
+          stroke-dasharray="565.48"
+          stroke-dashoffset="0"
+        ></circle>
+      </svg>
     </div>
 
 
     <script>
 
-        const boton1 = document.querySelector('.ON')
-        const boton2 = document.querySelector('.OFF')
-
-        let socketConnection = new WebSocket('ws://' + location.hostname + ':81/');
-
-        const turnOn = () => socketConnection.send("LedOn")
-        const turnOff = () => socketConnection.send("LedOff")
+      const boton1 = document.querySelector('.ON')
+      const boton2 = document.querySelector('.OFF')
 
 
-        boton1.addEventListener('click', ()=>{
+      let socketConnection = new WebSocket('ws://' + location.hostname + ':81/');
 
-            // socketConnection.send('LedOn');
-            console.log('ON')
-
-        })
-
-        boton2.addEventListener('click', ()=>{
-            // socketConnection.send('LedOff')
-            console.log('OFF')
-
-        })
-
-        socketConnection.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-        
-                if (data.distance !== undefined) {
-                    let value = data.distance;
-                    UpdateDist(value);
-        
-                    if (value > 10) {
-                        socketConnection.send("LedOn");
-                        console.log("Enviando a llenar");
-                    } else {
-                        socketConnection.send("LedOff");
-                        console.log("Detener llenado");
-                    }
-                } else if (data.status) {
-                    console.log("Estado del servidor:", data.status);
-                }
-            } catch (error) {
-                console.error("Error al parsear el mensaje:", error, "Mensaje recibido:", event.data);
-            }
-        };
-        
+      const turnOn = () => socketConnection.send("LedOn")
+      const turnOff = () => socketConnection.send("LedOff")
 
 
-        function UpdateDist(value){
 
-            const space = document.querySelector(".dist_value");
+      boton1.addEventListener('click', ()=>{
 
-            space.innerHTML = `${value}<span>cm</span>`;
+          // socketConnection.send('LedOn');
+          console.log('ON')
+
+      })
+
+      boton2.addEventListener('click', ()=>{
+          // socketConnection.send('LedOff')
+          console.log('OFF')
+
+      })
+
+      socketConnection.onmessage = (event) => {
+          try {
+              const data = JSON.parse(event.data);
+
+              if (data.distance !== undefined) {
+                  let value = data.distance;
+                  //UpdateDist(value);
+
+                  let porcentaje = parseInt(((40 - value)/(40-5)) * 100);
+
+                  updateCircle(porcentaje);
+
+                  if (value > 5) {
+                      socketConnection.send("LedOn");
+                      console.log("Enviando a llenar");
+                  } else {
+                      socketConnection.send("LedOff");
+                      console.log("Detener llenado");
+                  }
+              } else if (data.status) {
+                  console.log("Estado del servidor:", data.status);
+              }
+          } catch (error) {
+              console.error("Error al parsear el mensaje:", error, "Mensaje recibido:", event.data);
+          }
+      };
 
 
+
+      /*function UpdateDist(value){
+
+          const space = document.querySelector("#percent");
+
+          space.value = `${value}<span>cm</span>`;
+
+
+      }*/
+
+
+      function updateCircle(percent){
+      ////////////////////////////////////////////////////
+          let circle = document.querySelector("#bar");
+          let radius = circle.getAttribute('r');
+          let circumference = 2 * Math.PI * radius;
+
+          if (percent < 0) { percent = 0; }
+          if (percent > 100) { percent = 100; }
+
+          let offset = circumference - (percent / 100) * circumference;
+          circle.style.strokeDashoffset = offset;
+
+        document.querySelector("#cont").setAttribute('data-pct', percent);
         }
 
+         
+
+
+          ////////////////////////////////////////////////////
+      
     </script>
-</body>
+  </body>
 </html>

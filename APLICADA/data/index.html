@@ -8,8 +8,8 @@
 <body>
     <h1>Hola mundo</h1>
 
-    <button class="ON">ON</button>
-    <button class="OFF">OFF</button>
+    <button class="ON" onclick="turnOn()">ON</button>
+    <button class="OFF" onclick="turnOff()">OFF</button>
 
 
     <script>
@@ -19,9 +19,13 @@
 
         let socketConnection = new WebSocket('ws://' + location.hostname + ':81/');
 
+        const turnOn = () => socketConnection.send("LedOn")
+        const turnOff = () => socketConnection.send("LedOff")
+
+
         boton1.addEventListener('click', ()=>{
 
-            socketConnection.send('LedOn');
+            // socketConnection.send('LedOn');
             
             console.log('ON')
         
@@ -31,7 +35,7 @@
         boton2.addEventListener('click', ()=>{
             
             
-            socketConnection.send('LedOff');
+            // socketConnection.send('LedOff');
 
             console.log('OFF')
 

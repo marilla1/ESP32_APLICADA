@@ -4,7 +4,7 @@
 #include <ESPAsyncWebServer.h>
 #include "FS.h"
 
-const uint8_t ledPin = 2;
+const int ledPin = 13;
 
 AsyncWebServer server(80);
 WebSocketsServer WebSockets(81);
@@ -28,19 +28,40 @@ void setup() {
     return;
   }
 
+  Serial.println("============================SEGUNDAPARTE============================\n");
+  
   // Llamada a la función para listar archivos en SPIFFS
   listSPIFFSFiles(); 
 
   // Ajuste del server.on para enviar el archivo HTML
+  // server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+  //     File file = SPIFFS.open("/index.html");
+  //     if (!file) {
+  //         Serial.println("Archivo no encontrado: /index.html");
+  //         request->send(404, "text/plain", "Archivo no encontrado");
+  //         return;
+  //     }
+  //     request->send(file, "/index.html", "text/html");
+  // });
+
+//   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+//     if (SPIFFS.exists("/index.html")) {
+//         File file = SPIFFS.open("/index.html", "r");
+//         if (file) {
+//             request->send(200, file, "text/html");
+//         } else {
+//             request->send(500, "text/plain", "Error abriendo el archivo");
+//         }
+//     } else {
+//         request->send(404, "text/plain", "Archivo no encontrado");
+//     }
+// });
+
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-      File file = SPIFFS.open("/index.html");
-      if (!file) {
-          Serial.println("Archivo no encontrado: /index.html");
-          request->send(404, "text/plain", "Archivo no encontrado");
-          return;
-      }
-      request->send(file, "/index.html", "text/html");
+    request->send(SPIFFS, "/index.html", "text/html");  // Enviar el archivo directamente con el tipo MIME 'text/html'
   });
+
+
 
   server.onNotFound(notFound);
   server.begin();
@@ -48,7 +69,6 @@ void setup() {
   WebSockets.begin();
   WebSockets.onEvent(WebSocketEvent);
 
-  Serial.println(WiFi.softAPIP());
 
 }
 
@@ -81,10 +101,12 @@ void WebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 
       if (msg.equalsIgnoreCase("ledon")) {
         digitalWrite(ledPin, HIGH);
+        Serial.printf(" Mensaje recibido: %s\n", msg);
       }
 
       if (msg.equalsIgnoreCase("ledoff")) {
         digitalWrite(ledPin, LOW);
+        Serial.printf(" Mensaje recibido: %s\n", msg);
       }
   }
 }

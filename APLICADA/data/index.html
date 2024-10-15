@@ -6,7 +6,7 @@
     <title>Document</title>
   </head>
     <style>
-        html, body {
+        html, body,main {
             height: 100%;
             margin: 0; /* Elimina el margen por defecto */
             padding: 0; /* Elimina el padding por defecto */
@@ -15,6 +15,7 @@
 
         .H1_title{
           margin-bottom: 1rem;
+          margin-top: 20%;
         }
 
         #svg circle {
@@ -73,7 +74,7 @@
 
         .div_botones{
           display: flex;
-          margin-top: 25%;
+          margin-top: 0%;
           justify-content: center;
           gap: 4rem;
           
@@ -82,8 +83,8 @@
         .wrap {
             height: 100%;
             display: flex;
-            align-items: center;
             justify-content: center;
+            margin-top: 20%;
           }
           
           .button {
@@ -113,7 +114,19 @@
           }
 
           .div_capacidad{
-            margin-top: 20%;
+            margin-top:20%;
+          }
+          main{
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            margin-top:5%;
+          }
+
+          .footer_inc{
+            display: flex;
+            justify-content: center;
+            align-items: end;
           }
 
 
@@ -167,7 +180,7 @@
         </div>
     </main>
 
-    <footer>
+    <footer class="footer_inc">
       <span>© 2024 IMMS, Inc.</span>
     </footer>
     <script>

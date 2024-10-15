@@ -5,120 +5,167 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
-  <body>
     <style>
-      #svg circle {
-        stroke-dashoffset: 0;
-        transition: stroke-dashoffset 1s linear;
-        stroke: #666;
-        stroke-width: 1em;
-      }
-      #svg #bar {
-        stroke: #ff9f1e;
-      }
-      #cont {
-        display: block;
-        height: 200px;
-        width: 200px;
-        margin: 2em auto;
-        box-shadow: 0 0 1em black;
-        border-radius: 100%;
-        position: relative;
-      }
-      #cont:after {
-        position: absolute;
-        display: block;
-        height: 160px;
-        width: 160px;
-        left: 50%;
-        top: 50%;
-        box-shadow: inset 0 0 1em black;
-        content: attr(data-pct) "%";
-        margin-top: -80px;
-        margin-left: -80px;
-        border-radius: 100%;
-        line-height: 160px;
-        font-size: 2em;
-        text-shadow: 0 0 0.5em black;
-      }
+        html, body {
+            height: 100%;
+            margin: 0; /* Elimina el margen por defecto */
+            padding: 0; /* Elimina el padding por defecto */
+            overflow: hidden; /* Evita el scroll */
+        }
 
-      input {
-        color: #000;
-      }
+        .H1_title{
+          margin-bottom: 1rem;
+        }
 
-      /* Make things perty */
-      html {
-        height: 100%;
-      }
-      body {
-        font-family: "Source Sans Pro", Helvetica, Arial, sans-serif;
-        background-color: #0d0d0d;
-        color: #fff;
-        height: 100%;
-        padding-top: 2em;
-        text-align: center;
-      }
-      h1,
-      h2 {
-        margin: 0;
-        text-transform: uppercase;
-        text-shadow: 0 0 0.5em black;
-      }
-      h2 {
-        font-weight: 300;
-      }
-      input {
-        border: 1px solid #666;
-        background: #333;
-        color: #fff;
-        padding: 0.5em;
-        box-shadow: none;
-        outline: none !important;
-        margin: 1em auto;
-        text-align: center;
-      }
+        #svg circle {
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+            stroke: #666;
+            stroke-width: 1em;
+        }
+
+        #svg #bar {
+            stroke: #2e8ae5
+        }
+
+        #cont {
+            display: block;
+            height: 200px;
+            width: 200px;
+            margin: auto;
+            box-shadow: 0 0 1em black;
+            border-radius: 100%;
+            position: relative;
+        }
+
+        #cont:after {
+            position: absolute;
+            display: block;
+            height: 160px;
+            width: 160px;
+            left: 50%;
+            top: 50%;
+            box-shadow: inset 0 0 1em black;
+            content: attr(data-pct) "%";
+            margin-top: -80px;
+            margin-left: -80px;
+            border-radius: 100%;
+            line-height: 160px;
+            font-size: 2em;
+            text-shadow: 0 0 0.5em black;
+        }
+
+        body {
+            font-family: "Source Sans Pro", Helvetica, Arial, sans-serif;
+            background-color: #0d0d0d;
+            color: #fff;
+            padding-top: 2em; /* Puedes ajustar esto si es necesario */
+            text-align: center;
+            display: flex; /* Usar flex para centrar el contenido verticalmente */
+            flex-direction: column; /* Coloca los elementos en columna */
+            justify-content: center; /* Centra el contenido verticalmente */
+            align-items: center; /* Centra el contenido horizontalmente */
+            user-select: none; /* Para navegadores modernos */
+            -webkit-user-select: none; /* Para Chrome/Safari */
+            -moz-user-select: none; /* Para Firefox */
+            -ms-user-select: none; /* Para Internet Explorer/Edge */
+        }
+
+        .div_botones{
+          display: flex;
+          margin-top: 25%;
+          justify-content: center;
+          gap: 4rem;
+          
+        }
+
+        .wrap {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          .button {
+            width: 140px;
+            height: 45px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 20px;
+            font-family: sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            font-weight: 500;
+            color: #ffffff;
+            background-color: rgb(32, 22, 207);
+            border: none;
+            border-radius: 45px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease 0s;
+            cursor: pointer;
+            outline: none;
+            }
+          
+          .button:focus {
+            background-color: #3490ed !important;
+            box-shadow: 0px 15px 20px rgba(93, 220, 254, 0.4);
+            color: #fff;
+            transform: translateY(-7px);
+          }
+
+          .div_capacidad{
+            margin-top: 20%;
+          }
+
+
+  
     </style>
 
-    <div>
-        <button class="ON" onclick="turnOn()">ON</button>
-    
-        <button class="OFF" onclick="turnOff()">OFF</button>
-    </div>
+    <header>
 
-    <br /><br /><br />
+      <h1 class="H1_title">Porcentaje del Tanque</h1>
+    </header>
+    <main class="container_main">
+        <div class="cont_divex">
+            <div id="cont" data-pct="100">
+                <svg
+                  id="svg"
+                  width="200"
+                  height="200"
+                  viewPort="width=device-width"
+                  version="1.0"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                    <circle
+                        r="90"
+                        cx="100"
+                        cy="100"
+                        fill="transparent"
+                        stroke-dasharray="565.48"
+                        stroke-dashoffset="0"
+                    ></circle>
+                    <circle
+                        id="bar"
+                        r="90"
+                        cx="100"
+                        cy="100"
+                        fill="transparent"
+                        stroke-dasharray="565.48"
+                        stroke-dashoffset="0"
+                    ></circle>
+                </svg>
+            </div>
 
-    <h1>Porcentaje del Tanque</h1>
+            <div class="div_capacidad">
+                <span>Cantidad Actual:</span>
+                <span>1000 lts</span>
+            </div>
 
-    <div id="cont" data-pct="100">
-      <svg
-        id="svg"
-        width="200"
-        height="200"
-        viewPort="0 0 100 100"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          r="90"
-          cx="100"
-          cy="100"
-          fill="transparent"
-          stroke-dasharray="565.48"
-          stroke-dashoffset="0"
-        ></circle>
-        <circle
-          id="bar"
-          r="90"
-          cx="100"
-          cy="100"
-          fill="transparent"
-          stroke-dasharray="565.48"
-          stroke-dashoffset="0"
-        ></circle>
-      </svg>
-    </div>
-
-
+            <div class="div_botones wrap">
+                <button class="ON button" onclick="turnOn()">ON</button>
+                <button class="OFF button" onclick="turnOff()">OFF</button>
+            </div>
+        </div>
+    </main>
     <script>
 
       const boton1 = document.querySelector('.ON')
